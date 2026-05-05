@@ -27,17 +27,43 @@ function detectPlatform(url: string): ((url: string) => Promise<any>) | null {
 }
 
 function normalizeData(videoInfo: any) {
-  // btch-downloader returns data at the top level or nested
-  const d = videoInfo?.result?.data || videoInfo?.result || videoInfo?.data || videoInfo || {};
+  // 处理 result 为数组的情况（Instagram 等）
+  if (Array.isArray(videoInfo?.result)) {
+    const items = videoInfo.result;
+    const links = items.map((item: any, i: number) => ({
+      url: item.url || '',
+      quality: item.quality || `清晰度 ${i + 1}`,
+    }));
+    const videoUrl = links[0]?.url || '';
+    const coverUrl = items[0]?.thumbnail || '';
 
-  // Detect structure: some platforms return { links: [{url, quality}] }
-  // others return { mp4: 'url', mp3: 'url', images: [...] }
+    return {
+      platform: '',
+      contentType: 'video',
+      title: '',
+      author: '',
+      videoUrl,
+      imageUrl: '',
+      coverUrl,
+      duration: 0,
+      description: '',
+      keywords: '',
+      tags: [],
+      stats: { likes: 0, comments: 0, shares: 0, views: 0, collects: 0 },
+      links,
+      downloads: [],
+      images: [],
+    };
+  }
+
+  // 原有的对象逻辑
+  const d = videoInfo?.result?.data || videoInfo?.data || videoInfo || {};
+
   const links = d.links || [];
   const downloads = d.downloads || [];
   const images = d.images || [];
 
   let videoUrl = d.mp4 || d.videoUrl || d.video || '';
-  // btch-downloader 某些平台返回数组格式
   if (Array.isArray(videoUrl)) videoUrl = videoUrl[0] || '';
   if (!videoUrl && links.length > 0) videoUrl = links[0].url || '';
   if (!videoUrl && downloads.length > 0) videoUrl = downloads[0] || '';
