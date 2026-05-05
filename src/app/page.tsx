@@ -127,7 +127,13 @@ export default function Home() {
       )}
 
       {/* 底部安全区 */}
-      <div className="mt-auto pt-8 text-center text-[10px] text-slate-700">
+      <div className="mt-6 flex flex-col items-center gap-2 pt-4 text-center text-[10px] text-slate-700">
+        <a
+          href="/api/install"
+          className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs text-slate-400 transition-colors hover:bg-slate-700 hover:text-slate-300"
+        >
+          iOS 安装描述文件
+        </a>
         Video Parser v1.0
       </div>
     </main>
