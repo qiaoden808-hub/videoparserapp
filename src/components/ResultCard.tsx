@@ -53,20 +53,29 @@ export default function ResultCard({ data }: { data: ParsedData }) {
   const formatNum = (n: number) =>
     n >= 10000 ? `${(n / 10000).toFixed(1)}万` : String(n);
 
-  const handleDownload = async (url: string, filename: string) => {
-    // 尝试 fetch 下载，失败则直接打开
-    try {
-      const resp = await fetch(url, { mode: 'cors' });
-      if (!resp.ok) throw new Error('CORS');
-      const blob = await resp.blob();
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(a.href);
-    } catch {
-      window.open(url, '_blank');
-    }
+  const handleDownload = (url: string, filename: string) => {
+    // 先尝试 fetch + blob 下载（CORS 可用时）
+    fetch(url, { mode: 'cors' })
+      .then((r) => {
+        if (!r.ok) throw new Error();
+        return r.blob();
+      })
+      .then((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      })
+      .catch(() => {
+        // CORS 受限时直接导航到视频链接（iOS 兼容）
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
   };
 
   const hasVideo = allLinks.length > 0;
