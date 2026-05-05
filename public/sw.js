@@ -12,12 +12,16 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  // Skip cross-origin requests (CDN thumbnails, videos, etc.)
+  if (!event.request.url.startsWith(self.location.origin)) return;
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request).then((response) => {
-        if (response.status === 200 && event.request.method === 'GET') {
-          const cache = caches.open(CACHE);
-          cache.then((c) => c.put(event.request, response.clone()));
+      if (cached) return cached;
+      return fetch(event.request).then((response) => {
+        if (response.status === 200) {
+          caches.open(CACHE).then((c) => c.put(event.request, response.clone()));
         }
         return response;
       });
