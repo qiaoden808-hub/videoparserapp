@@ -8,18 +8,19 @@
     "start": "next start"
   },
   "dependencies": {
+    "btch-downloader": "^6.0.25",
     "next": "^14.2.21",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "btch-downloader": "^6.0.25"
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
-    "typescript": "^5.3.3",
     "@types/node": "^20.17.24",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
-    "tailwindcss": "^3.4.17",
+    "autoprefixer": "^10.4.20",
     "postcss": "^8.5.3",
-    "autoprefixer": "^10.4.20"
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.3.3"
   }
 }
