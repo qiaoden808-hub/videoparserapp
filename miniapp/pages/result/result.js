@@ -148,6 +148,7 @@ Page({
       wx.showLoading({ title: '获取中...' });
       wx.downloadFile({
         url,
+        timeout: 120000,
         success(res) {
           wx.hideLoading();
           if (res.statusCode === 200) {
