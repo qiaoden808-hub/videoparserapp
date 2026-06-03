@@ -61,4 +61,11 @@ function pingServer() {
   });
 }
 
-module.exports = { fetchVideoInfo, pingServer };
+/**
+ * 生成代理下载链接 — 通过自己的域名中转，解决白名单限制
+ */
+function proxyUrl(rawUrl) {
+  return `${app.globalData.apiBase}/download?url=${encodeURIComponent(rawUrl)}`;
+}
+
+module.exports = { fetchVideoInfo, pingServer, proxyUrl };

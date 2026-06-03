@@ -2,6 +2,8 @@
  * 结果页 — 展示视频/图片信息 & 保存到本地
  * 严格避免使用"下载""水印"等敏感词
  */
+const { proxyUrl } = require('../../utils/api');
+
 Page({
   data: {
     // 从 globalData 读取的数据
@@ -93,8 +95,8 @@ Page({
     this.setData({ saving: true });
 
     try {
-      // 先下载临时文件
-      const tempRes = await this.downloadFile(item.url);
+      // 通过代理下载（绕过下载域名白名单限制）
+      const tempRes = await this.downloadFile(proxyUrl(item.url));
       // 保存到相册
       await this.saveToAlbum(tempRes.tempFilePath, 'video');
       wx.showToast({ title: '已保存到相册', icon: 'success' });
@@ -120,7 +122,7 @@ Page({
       let count = 0;
       for (const imgUrl of images) {
         try {
-          const tempRes = await this.downloadFile(imgUrl);
+          const tempRes = await this.downloadFile(proxyUrl(imgUrl));
           await this.saveToAlbum(tempRes.tempFilePath, 'image');
           count++;
         } catch {
