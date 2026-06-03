@@ -145,21 +145,32 @@ Page({
   /* 下载远程文件到本地临时路径 */
   downloadFile(url) {
     return new Promise((resolve, reject) => {
-      wx.showLoading({ title: '获取中...' });
-      wx.downloadFile({
+      wx.showLoading({ title: '准备获取...' });
+      const downloadTask = wx.downloadFile({
         url,
-        timeout: 120000,
+        timeout: 180000,
+        followRedirect: true,
         success(res) {
           wx.hideLoading();
           if (res.statusCode === 200) {
             resolve(res);
           } else {
-            reject(new Error(`状态码 ${res.statusCode}`));
+            reject(new Error(`服务器返回 ${res.statusCode}`));
           }
         },
         fail(err) {
           wx.hideLoading();
-          reject(err);
+          console.error('下载失败详情:', JSON.stringify(err));
+          reject(new Error(err.errMsg || '获取失败'));
+        }
+      });
+
+      // 显示下载进度
+      downloadTask.onProgressUpdate((res) => {
+        const pct = res.progress;
+        wx.showLoading({ title: `获取中 ${pct}%` });
+        if (pct >= 100) {
+          wx.showLoading({ title: '处理中...' });
         }
       });
     });
