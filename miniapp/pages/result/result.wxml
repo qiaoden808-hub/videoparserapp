@@ -1,0 +1,107 @@
+<!-- 结果页：展示识别的视频信息，提供保存操作 -->
+<view class="container">
+  <!-- 封面图 -->
+  <view wx:if="{{coverUrl}}" class="cover">
+    <image src="{{coverUrl}}" mode="widthFix" class="cover-img" />
+  </view>
+
+  <!-- 标题 -->
+  <view class="card">
+    <text class="info-title">{{title || '无标题'}}</text>
+
+    <!-- 作者 & 平台 -->
+    <view class="meta-row">
+      <text wx:if="{{author}}" class="author">✎ {{author}}</text>
+      <text class="badge">{{platform || 'unknown'}}</text>
+    </view>
+
+    <!-- 互动数据 -->
+    <view wx:if="{{hasStats}}" class="stats">
+      <view class="stat-item">
+        <text class="stat-num">{{formatNum(stats.likes)}}</text>
+        <text class="stat-label">点赞</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{formatNum(stats.comments)}}</text>
+        <text class="stat-label">评论</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{formatNum(stats.shares)}}</text>
+        <text class="stat-label">转发</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{formatNum(stats.views)}}</text>
+        <text class="stat-label">播放</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-num">{{formatNum(stats.collects)}}</text>
+        <text class="stat-label">收藏</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 视频保存区 -->
+  <view wx:if="{{hasVideo}}" class="card">
+    <text class="section-title">视频文件</text>
+    <text class="section-hint">选择清晰度后保存到相册</text>
+
+    <!-- 画质选择 -->
+    <view class="quality-grid">
+      <view
+        wx:for="{{allLinks}}"
+        wx:key="index"
+        class="quality-item {{selectedIdx === index ? 'active' : ''}}"
+        data-index="{{index}}"
+        bindtap="onSelectQuality"
+      >
+        {{item.label}}
+      </view>
+    </view>
+
+    <!-- 保存按钮 -->
+    <button
+      class="btn-primary save-btn"
+      bindtap="onSaveVideo"
+      loading="{{saving}}"
+    >
+      {{saving ? '保存中...' : '保存至相册'}}
+    </button>
+  </view>
+
+  <!-- 图片保存区 -->
+  <view wx:if="{{hasImages}}" class="card">
+    <text class="section-title">图片内容 ({{images.length}}张)</text>
+    <view class="image-grid">
+      <view wx:for="{{images}}" wx:key="index" class="image-item">
+        <image
+          src="{{item}}"
+          mode="aspectFill"
+          class="grid-img"
+          bindtap="onPreviewImage"
+          data-url="{{item}}"
+          data-index="{{index}}"
+        />
+      </view>
+    </view>
+    <button
+      class="btn-primary save-btn"
+      bindtap="onSaveImages"
+      loading="{{savingImages}}"
+    >
+      {{savingImages ? '保存中...' : '保存全部图片'}}
+    </button>
+  </view>
+
+  <!-- 描述 -->
+  <view wx:if="{{description}}" class="card">
+    <text class="desc-text">{{description}}</text>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="actions">
+    <button class="copy-btn" bindtap="onCopyLink">复制源链接</button>
+    <button class="back-btn" bindtap="onBack">返回首页</button>
+  </view>
+
+  <view class="safe-area" />
+</view>

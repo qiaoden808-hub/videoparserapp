@@ -1,0 +1,74 @@
+<!-- 首页：粘贴链接，识别视频信息 -->
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="header-text">
+      <text class="title">视频助手</text>
+      <text class="subtitle">粘贴链接，一键识别视频信息</text>
+    </view>
+    <view class="logo">VH</view>
+  </view>
+
+  <!-- 输入区 -->
+  <view class="input-section">
+    <!-- 链接输入 -->
+    <view class="input-row">
+      <input
+        class="url-input"
+        type="text"
+        placeholder="粘贴视频分享链接..."
+        placeholder-class="placeholder"
+        value="{{url}}"
+        bindinput="onUrlInput"
+        bindconfirm="onSubmit"
+        confirm-type="done"
+      />
+      <view wx:if="{{url}}" class="clear-btn" bindtap="onClear">✕</view>
+    </view>
+
+    <!-- 平台选择 -->
+    <picker
+      mode="selector"
+      range="{{platforms}}"
+      range-key="label"
+      value="{{platformIdx}}"
+      bindchange="onPlatformChange"
+    >
+      <view class="picker">
+        <text>{{platforms[platformIdx].label}}</text>
+        <text class="picker-arrow">▾</text>
+      </view>
+    </picker>
+
+    <!-- 识别按钮 -->
+    <button
+      class="btn-primary"
+      disabled="{{loading || !url}}"
+      bindtap="onSubmit"
+      loading="{{loading}}"
+    >
+      {{loading ? '识别中...' : '识别视频信息'}}
+    </button>
+  </view>
+
+  <!-- 错误提示 -->
+  <view wx:if="{{error}}" class="error-msg">{{error}}</view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{!result && !loading && !error}}" class="empty-state">
+    <view class="empty-icon">▶</view>
+    <text class="empty-title">支持以下平台</text>
+    <text class="empty-list">
+      抖音 · TikTok · 快手 · 小红书
+      Instagram · Facebook · Twitter · YouTube
+    </text>
+  </view>
+
+  <!-- 底部 -->
+  <view class="footer">
+    <text>视频助手 v1.0 — 仅用于学习交流</text>
+  </view>
+
+  <!-- 安全区占位（iPhone底部） -->
+  <view class="safe-area" />
+</view>
