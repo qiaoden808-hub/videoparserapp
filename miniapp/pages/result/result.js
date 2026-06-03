@@ -52,11 +52,18 @@ Page({
       return { ...link, label };
     });
 
+    const hasVideo = labeled.length > 0;
+    const hasImages = Array.isArray(data.images) && data.images.length > 0;
+    const hasStats = data.stats && Object.values(data.stats).some((v) => v > 0);
+
     this.setData({
       ...data,
       allLinks: labeled,
       selectedIdx: 0,
-      sourceUrl: data.videoUrl || data.imageUrl || ''
+      sourceUrl: data.videoUrl || data.imageUrl || '',
+      hasVideo,
+      hasImages,
+      hasStats
     });
   },
 

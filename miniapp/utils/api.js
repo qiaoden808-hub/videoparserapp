@@ -11,20 +11,28 @@ const app = getApp();
  */
 function fetchVideoInfo(url, platform = 'auto') {
   return new Promise((resolve, reject) => {
+    console.log('>>> [API] 开始请求:', { url: url.trim(), platform });
+    const startTime = Date.now();
+
     wx.request({
       url: `${app.globalData.apiBase}/parse`,
       method: 'POST',
+      timeout: 90000,
       header: { 'Content-Type': 'application/json' },
       data: { url: url.trim(), platform },
       success(res) {
+        const elapsed = Date.now() - startTime;
+        console.log(`>>> [API] 响应 ${res.statusCode} | 耗时: ${elapsed}ms`);
         if (res.statusCode === 200 && res.data && res.data.success) {
           resolve(res.data.data);
         } else {
+          console.warn('>>> [API] 业务失败:', res.data);
           reject(new Error(res.data?.error || '未能识别该链接'));
         }
       },
       fail(err) {
-        console.error('API 请求失败:', err);
+        const elapsed = Date.now() - startTime;
+        console.error(`>>> [API] 请求失败 | 耗时: ${elapsed}ms | 错误:`, JSON.stringify(err));
         reject(new Error('网络异常，请稍后重试'));
       }
     });
@@ -32,23 +40,25 @@ function fetchVideoInfo(url, platform = 'auto') {
 }
 
 /**
- * 检测平台类型（本地预判，减少服务端压力）
+ * 快速连通性测试
  */
-function guessPlatform(url) {
-  const map = [
-    ['douyin', ['douyin.com', 'iesdouyin.com']],
-    ['tiktok', ['tiktok.com']],
-    ['instagram', ['instagram.com']],
-    ['facebook', ['facebook.com', 'fb.watch']],
-    ['twitter', ['twitter.com', 'x.com']],
-    ['youtube', ['youtube.com', 'youtu.be']],
-    ['kuaishou', ['kuaishou.com']],
-    ['xiaohongshu', ['xiaohongshu.com', 'xhslink.com']],
-  ];
-  for (const [key, domains] of map) {
-    if (domains.some((d) => url.includes(d))) return key;
-  }
-  return 'unknown';
+function pingServer() {
+  return new Promise((resolve) => {
+    const start = Date.now();
+    wx.request({
+      url: `${app.globalData.apiBase}/install`,
+      method: 'GET',
+      timeout: 10000,
+      success(res) {
+        console.log(`>>> [Ping] 状态: ${res.statusCode} | 延迟: ${Date.now() - start}ms`);
+        resolve(true);
+      },
+      fail(err) {
+        console.error('>>> [Ping] 失败:', JSON.stringify(err));
+        resolve(false);
+      }
+    });
+  });
 }
 
-module.exports = { fetchVideoInfo, guessPlatform };
+module.exports = { fetchVideoInfo, pingServer };
